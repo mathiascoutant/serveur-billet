@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -25,7 +26,22 @@ const (
 
 var (
 	roles              = []string{"Réalisateur", "Acteur", "Producteur"}
-	films              = []string{"Parasite", "Pulp Fiction", "Le Pianiste", "Amour et autres désastres"}
+	films              = []string{
+		"Amour", "La Haine", "Intouchables", "Le Fabuleux Destin d'Amélie Poulain",
+		"Les Choristes", "La La Land", "Les Misérables", "Un prophète",
+		"Le Grand Bleu", "Caché", "Léon", "La Vie en Rose",
+		"Les 400 Coups", "Delicatessen", "Au revoir les enfants", "La Gloire de mon père",
+		"Les Parapluies de Cherbourg", "L'Atelier", "La Femme Nikita", "Tanguy",
+		"Le Dîner de cons", "Les Visiteurs", "Bienvenue chez les Ch'tis", "Intouchables",
+		"Le Prénom", "L'Arnacoeur", "Les Petits Mouchoirs", "La Famille Bélier",
+		"Les Biches", "Lola", "La Jetée", "Les Diaboliques",
+		"Un long dimanche de fiançailles", "L'Enfant", "La Cité des enfants perdus", "Les Aventures de Rabbi Jacob",
+		"Le Petit Nicolas", "L'Exercice de l'État", "La Délicatesse", "Les Beaux Gosses",
+		"Le Sens de la fête", "La Promesse", "L'Ascension", "Les Tuche",
+		"Les Frères Sisters", "La Môme", "L'Intouchable", "Le Voyage de Fanny",
+		"Les Enfoirés", "La Ch'tite Famille", "L'Ordre et la Morale", "Le Gendarme de Saint-Tropez",
+		"Les Trois Frères", "La Guerre des boutons", "L'Enfer", "Le Petit Prince",
+	}
 	scannedParticipants []SimpleResponse
 	participantChoices  = make(map[string]SimpleResponse)
 	conn               *websocket.Conn
