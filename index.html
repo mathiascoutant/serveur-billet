@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derniers Participants Scannés</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4; /* Couleur de fond claire */
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #333; /* Couleur sombre pour le titre */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: normal; /* Poids de police normal pour un look chic */
+        }
+        #participants {
+            margin-top: 20px;
+            padding: 20px;
+            display: inline-block;
+            width: 400px;
+        }
+        .participant {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s; /* Animation pour l'effet de survol */
+            border: 1px solid rgba(0, 0, 0, 0.2); /* Bordure pour chaque participant */
+            color: #000;
+        }
+        .participant:hover {
+            transform: translateY(-3px); /* Légère élévation au survol */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* Ombre plus marquée au survol */
+        }
+        .first-participant {
+            border: 2px solid #ffcc00; /* Bordure dorée pour le premier participant */
+            background-color: rgba(154, 154, 154, 0.763); /* Fond doré léger et transparent */
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.5); /* Ombre pour le premier participant */
+        }
+        .second-participant {
+            background-color: rgba(224, 224, 224, 0.7); /* Fond gris clair avec transparence pour le deuxième participant */
+        }
+        .third-participant {
+            background-color: rgba(224, 224, 224, 0.5); /* Fond gris clair avec plus de transparence pour le troisième participant */
+        }
+        .participant p {
+            margin: 5px 0;
+            font-size: 18px; /* Taille de police plus grande */
+            font-weight: bold; /* Mettre en gras les noms */
+            transition: transform 0.3s; /* Animation pour le zoom */
+        }
+        .zoom {
+            transform: scale(1.1); /* Zoom sur le prénom */
+        }
+    </style>
+</head>
+<body>
+    <h1>Derniers Participants Scannés</h1>
+    <div id="participants">Chargement des participants...</div>
+
+    <script>
+        let lastFirstParticipant = ""; // Variable pour stocker le nom du premier participant précédent
+
+        async function fetchParticipants() {
+            try {
+                const response = await fetch('http://localhost:8080/scan');
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la récupération des participants');
+                }
+                const participants = await response.json();
+                const participantsDiv = document.getElementById('participants');
+                participantsDiv.innerHTML = '';
+
+                if (participants.length === 0) {
+                    participantsDiv.innerHTML = '<p>Aucun scan n\'a encore été effectué.</p>';
+                    return;
+                }
+
+                // Limiter à 3 participants
+                const displayedParticipants = participants.slice(0, 3);
+
+                displayedParticipants.forEach((participant, index) => {
+                    const participantDiv = document.createElement('div');
+                    participantDiv.className = 'participant';
+                    if (index === 0) {
+                        participantDiv.classList.add('first-participant'); // Ajouter une classe pour le premier participant
+                    } else if (index === 1) {
+                        participantDiv.classList.add('second-participant'); // Classe pour le deuxième participant
+                    } else if (index === 2) {
+                        participantDiv.classList.add('third-participant'); // Classe pour le troisième participant
+                    }
+                    const participantName = document.createElement('p');
+                    // Modifier le texte pour inclure le rôle et le film
+                    participantName.textContent = `${participant.role} ${participant.first_name} ${participant.last_name} du film ${participant.film}`;
+                    participantDiv.appendChild(participantName);
+                    participantsDiv.appendChild(participantDiv);
+
+                    // Animation de zoom uniquement pour le premier participant
+                    if (index === 0) {
+                        const currentFirstParticipant = `${participant.first_name} ${participant.last_name}`;
+                        // Vérifier si le premier participant a changé
+                        if (currentFirstParticipant !== lastFirstParticipant) {
+                            participantName.classList.add('zoom');
+                            setTimeout(() => {
+                                participantName.classList.remove('zoom');
+                            }, 300); // Retirer la classe après 300ms
+                        }
+                        lastFirstParticipant = currentFirstParticipant; // Mettre à jour le participant précédent
+                    }
+                });
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('participants').innerHTML = '<p>Erreur de chargement des participants.</p>';
+            }
+        }
+
+        // Mettre à jour les participants toutes les 5 secondes
+        setInterval(fetchParticipants, 5000);
+        // Charger les participants au chargement de la page
+        fetchParticipants();
+    </script>
+</body>
+</html>

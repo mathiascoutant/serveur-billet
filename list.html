@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques des Billets</title>
+    <style>
+        body {
+            background-color: black; /* Optionnel : met le fond en noir */
+            color: white; /* Texte en blanc */
+            font-family: Arial, sans-serif; /* Style de police */
+            text-align: center; /* Centrer le contenu */
+            padding: 20px;
+        }
+        #participantCount {
+            font-size: 1.5em; /* Augmente la taille du texte */
+        }
+    </style>
+    <script>
+        // Fonction pour récupérer le nombre de participants
+        async function fetchParticipantCount() {
+            try {
+                console.log('Tentative de récupération du nombre de participants'); // Debugging log
+                const response = await fetch('http://localhost:8080/scan_count');
+                
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la récupération des statistiques');
+                }
+
+                const data = await response.json();
+                // Mettre à jour l'affichage du nombre de participants
+                document.getElementById('participantCount').innerText = 
+                    `${data.scanned_count} / ${data.total_count}`;
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('participantCount').innerText = 
+                    'Erreur de chargement des statistiques.';
+            }
+        }
+
+        // Fonction appelée au chargement de la page
+        window.onload = function() {
+            // Appel initial pour récupérer le nombre de participants
+            fetchParticipantCount();
+
+            // Actualiser les statistiques toutes les 5 secondes
+            setInterval(fetchParticipantCount, 5000);
+        };
+    </script>
+</head>
+<body>
+    <h1>Statistiques des Billets</h1>
+    <div id="participantCount">Nombre de personnes : 0 / 0</div> <!-- Valeur initiale -->
+</body>
+</html>
